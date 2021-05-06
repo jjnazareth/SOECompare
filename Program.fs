@@ -1,5 +1,4 @@
 ﻿
-open System
 open System.IO
 open ExcelData
 open CsvData
@@ -8,14 +7,14 @@ open FSharp.Collections
 let tee f x = f x; x
 
 let folder = @"C:\Users\Nazareth\Documents\Jivraj\SOE\Db"
-let fileName = @"Full Dbase 2020-12-19.xlsx"
+let fileName = @"Full Dbase 2021-04-28.xlsx"
 let sheet = "Master"
 let xlFPath = Path.Combine (folder, fileName)
     
-let clnFName = @"cleaned_segment_export_edcf0c4d01.csv"
-let unsubFName = @"unsubscribed_segment_export_edcf0c4d01.csv"
-let subFName = @"subscribed_segment_export_69990193e4.csv"
-let ePrayerFName =  @"subscribed_segment_export_08f302289c.csv"
+let clnFName = @"cleaned_segment_export_5505166846.csv"
+let unsubFName = @"unsubscribed_segment_export_5505166846.csv"
+let subFName = @"subscribed_segment_export_a40494e639.csv"
+let ePrayerFName =  @"subscribed_segment_export_ccd077b9b7.csv"
 
 let noDbSubscribed =
     // subscribed in MailChimp but not in Full Dbase.xlsx
@@ -181,8 +180,8 @@ let newContactsCsv =
 
     query {
         for row in getExcelData xlFPath sheet do 
-        where ( (not <| List.contains (row.EmailAddress.Trim().ToLower()) subEmails) &&
-                (not <| List.contains (row.EmailAddress.Trim().ToLower()) unSubEmails) )
+        where ( (not <| List.contains (row.EmailAddress.Trim().ToLower()) subEmails) && 
+                (not <| List.contains (row.EmailAddress.Trim().ToLower()) unSubEmails )  )
             
         select row
     }
@@ -190,6 +189,26 @@ let newContactsCsv =
 
 [<EntryPoint>]
 let main argv = 
+(*     getExcelAllData xlFPath sheet
+    |> Seq.filter (fun x -> x.EmailAddress.Trim() = "")
+    |> Seq.filter (fun x -> x.Address.Trim() = "")
+    |> Seq.filter (fun x -> x.Telephone <> "" || x.Mobile <> "")
+    |> Seq.length
+
+    |> (printfn "%i")
+ 
+    getExcelAllData xlFPath sheet
+    |> Seq.filter (fun x -> x.EmailAddress.Trim() = "")
+    |> Seq.filter (fun x -> x.Address.Trim() <> "")
+    // |> Seq.filter (fun x -> x.Telephone <> "" || x.Mobile <> "")
+    |> Seq.length
+    |> (printfn "%i")
+ 
+    getExcelAllData xlFPath sheet
+    |> Seq.filter (fun x -> x.EmailAddress <> "")
+    |> Seq.length
+    |> (printfn "%i")
+ *) 
     if argv.Length = 0 then 
         printfn "Records that do not exist in Full Dbase.xlsx but are subscribed"
         noDbSubscribed
@@ -207,7 +226,7 @@ let main argv =
         dbCleaned
         |> Seq.iter (printfn "%s")
         printfn "==============="
-        printfn "Records that do not exist in Full Dbase.xlsx but are ePrayers in MailChimp"
+        printfn "Records that are not in ePrayers in Full Dbase.xlsx but are ePrayers in MailChimp"
         noDbEPrayers
         |> Seq.iter (printfn "%s")    
         printfn "==============="
@@ -220,6 +239,5 @@ let main argv =
         printfn "Diocese, Email Address, Title, First Name, Last Name"
         newContactsCsv
         |> Seq.iter (fun x -> printfn "%s,%s,%s,%s,%s" x.Diocese (x.EmailAddress.Trim()) x.Title x.FirstName x.LastName )
-  
 
     0 // return an integer exit code

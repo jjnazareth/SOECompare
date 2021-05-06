@@ -12,6 +12,7 @@ type ExcelRow = {
     Status: Status
     }
 
+
 let getCsvData (path:string) =
     let csv = CsvFile.Load(path)
     csv.Rows
@@ -23,4 +24,15 @@ let getCsvData (path:string) =
         Diocese = row.[4]
         Status = Ok
         })
-    
+
+
+
+
+
+
+
+
+
+
+
+
